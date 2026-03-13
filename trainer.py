@@ -126,8 +126,8 @@ def train_model(train_ds: SequenceDataset, valid_ds: SequenceDataset, input_size
                 scaler_amp.update()
                 optimizer.zero_grad(set_to_none=True)
 
-            if scheduler is not None:
-                scheduler.step()
+                if scheduler is not None:
+                    scheduler.step()
             if ema is not None:
                 ema.update(model)
 

@@ -1,17 +1,33 @@
 import numpy as np
 import pandas as pd
 
-from config import HORIZON_BARS, SL_ATR_MULT, MIN_RR, USE_ADAPTIVE_RR
+from config import HORIZON_BARS, SL_ATR_MULT, MIN_RR, USE_ADAPTIVE_RR, SYMBOL
+
+
+def _get_point_size() -> float:
+    """Get the point size for the symbol. Falls back to a sensible default."""
+    try:
+        import MetaTrader5 as mt5
+        info = mt5.symbol_info(SYMBOL)
+        if info is not None:
+            return info.point
+    except Exception:
+        pass
+    return 0.001  # XAUUSD default
 
 
 def build_labels_no_lookahead(df: pd.DataFrame, horizon: int = HORIZON_BARS,
-                              sl_atr_mult: float = SL_ATR_MULT, min_rr: float = MIN_RR):
+                              sl_atr_mult: float = SL_ATR_MULT, min_rr: float = MIN_RR,
+                              point_size: float = None):
     labels = np.zeros(len(df), dtype=int)
+
+    if point_size is None:
+        point_size = _get_point_size()
 
     open_ = df["open"].values
     high = df["high"].values
     low = df["low"].values
-    spread = df["spread"].values if "spread" in df.columns else np.zeros(len(df))
+    spread_raw = df["spread"].values if "spread" in df.columns else np.zeros(len(df))
     atr_vals = df["M1_atr_14"].values
 
     # ── Adaptive RR: lower RR in low-volatility regimes ──
@@ -25,7 +41,8 @@ def build_labels_no_lookahead(df: pd.DataFrame, horizon: int = HORIZON_BARS,
         if not np.isfinite(atr_now) or atr_now <= 0:
             continue
 
-        spread_price = spread[entry_idx]
+        # Convert spread from MT5 points to price units
+        spread_price = spread_raw[entry_idx] * point_size
         mid_entry = open_[entry_idx]
 
         buy_entry = mid_entry + spread_price / 2.0
