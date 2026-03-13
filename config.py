@@ -1,0 +1,126 @@
+import torch
+import MetaTrader5 as mt5
+
+SYMBOL = "XAUUSD"
+YEARS_BACK = 1
+
+TIMEFRAMES = {
+    "M1": mt5.TIMEFRAME_M1,
+    "M5": mt5.TIMEFRAME_M5,
+    "M15": mt5.TIMEFRAME_M15,
+    "H1": mt5.TIMEFRAME_H1,
+}
+
+SEQ_LEN = 96
+BATCH_SIZE = 256
+MAX_EPOCHS = 50
+LR = 5e-4
+MAX_LR = 1.5e-3
+
+CNN_CHANNELS = 128
+LSTM_HIDDEN = 128
+LSTM_LAYERS = 2
+DROPOUT = 0.3
+
+TRANSFORMER_DIM = 128
+TRANSFORMER_HEADS = 4
+TRANSFORMER_LAYERS = 3
+
+DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+SEED = 42
+
+EARLY_STOPPING_PATIENCE = 8
+WEIGHT_DECAY = 1e-4
+LABEL_SMOOTHING = 0.03
+USE_FOCAL_LOSS = True
+FOCAL_GAMMA = 2.0
+USE_AMP = torch.cuda.is_available()
+USE_EMA_WEIGHTS = True
+EMA_DECAY = 0.997
+USE_ONECYCLE = True
+
+HORIZON_BARS = 40
+SL_ATR_MULT = 1.4
+MIN_RR = 1.3
+
+TRAIN_RATIO = 0.70
+VALID_RATIO = 0.15
+
+WF_TRAIN_BARS = 60000
+WF_TEST_BARS = 10000
+WF_STEP_BARS = 10000
+
+SESSION_FILTER = True
+SESSION_WINDOWS_UTC = [
+    ("07:00", "16:30"),
+    ("12:00", "21:00"),
+]
+
+MAX_SPREAD_POINTS = 220
+
+USE_NEWS_FILTER = True
+NEWS_CSV_PATH = "news_events.csv"
+NEWS_BLOCK_BEFORE_MIN = 20
+NEWS_BLOCK_AFTER_MIN = 20
+NEWS_IMPACT_ALLOW = {"high"}
+
+BACKTEST_ENTRY_SLIPPAGE_POINTS = 25
+BACKTEST_EXIT_SLIPPAGE_POINTS = 25
+
+SIGNAL_SMOOTH_BARS = 3
+COOLDOWN_BARS = 10
+REJECT_COOLDOWN_BARS = 2
+
+BUY_THRESHOLD_GRID = [0.50, 0.52, 0.54, 0.56, 0.58, 0.60, 0.62]
+SELL_THRESHOLD_GRID = [0.50, 0.52, 0.54, 0.56, 0.58, 0.60, 0.62]
+
+LIVE_BUY_THRESHOLD_OFFSET = 0.02
+LIVE_SELL_THRESHOLD_OFFSET = 0.02
+
+MIN_ATR_PCT = 0.00014
+MIN_M15_TREND_STRENGTH = 0.00004
+MIN_H1_TREND_STRENGTH = 0.00004
+
+RR_MAP = [
+    (0.82, 2.00),
+    (0.76, 1.80),
+    (0.70, 1.60),
+    (0.64, 1.45),
+    (0.00, 1.30),
+]
+
+INITIAL_BALANCE = 10000.0
+RISK_PER_TRADE = 0.002
+MAX_LOT = 0.10
+MAGIC = 26032026
+DEVIATION = 20
+
+USE_BREAK_EVEN = True
+BE_TRIGGER_R = 1.0
+
+USE_PARTIAL_TP = True
+PARTIAL_TP_R = 1.0
+PARTIAL_CLOSE_RATIO = 0.50
+
+USE_TRAILING_STOP = True
+TRAILING_ATR_MULT = 1.2
+
+MODEL_PATH = "xauusd_v7_model.pt"
+SCALER_PATH = "xauusd_v7_scaler.joblib"
+FEATURES_PATH = "xauusd_v7_features.joblib"
+METRICS_PATH = "xauusd_v7_metrics.json"
+
+DATASET_PATH = "xauusd_v7_dataset.csv"
+BT_TRADES_PATH = "xauusd_v7_backtest_trades.csv"
+BT_SUMMARY_PATH = "xauusd_v7_backtest_summary.json"
+BT_EQUITY_PATH = "xauusd_v7_backtest_equity.csv"
+WF_PATH = "xauusd_v7_walkforward.json"
+WF_TRADES_PATH = "xauusd_v7_walkforward_trades.csv"
+WF_EQUITY_PATH = "xauusd_v7_walkforward_equity.csv"
+LIVE_LOG_PATH = "xauusd_v7_live_log.csv"
+
+# ── Live safety ──
+MAX_DAILY_LOSS_PCT = 0.03
+MAX_OPEN_POSITIONS = 1
+MT5_RECONNECT_WAIT_SEC = 10
+HEARTBEAT_INTERVAL_SEC = 300
