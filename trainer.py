@@ -1,4 +1,5 @@
 import copy
+import time
 import numpy as np
 import torch
 from torch.utils.data import DataLoader
@@ -92,7 +93,11 @@ def train_model(train_ds: SequenceDataset, valid_ds: SequenceDataset, input_size
     best_state = None
     patience_left = EARLY_STOPPING_PATIENCE
 
+    total_batches = len(train_loader)
+    print(f"Training on {DEVICE.upper()} | {total_batches} batches/epoch | batch_size={BATCH_SIZE}")
+
     for epoch in range(MAX_EPOCHS):
+        epoch_start = time.time()
         model.train()
         train_loss = 0.0
         train_count = 0
@@ -134,6 +139,11 @@ def train_model(train_ds: SequenceDataset, valid_ds: SequenceDataset, input_size
             train_loss += loss.item() * GRAD_ACCUM_STEPS * len(xb)
             train_count += len(xb)
 
+            if (step + 1) % 50 == 0 or (step + 1) == total_batches:
+                elapsed = time.time() - epoch_start
+                avg_loss = train_loss / max(train_count, 1)
+                print(f"  epoch {epoch+1} | batch {step+1}/{total_batches} | loss={avg_loss:.5f} | {elapsed:.0f}s", end="\r")
+
         train_loss /= max(train_count, 1)
 
         # ── Apply EMA before validation ──
@@ -167,7 +177,9 @@ def train_model(train_ds: SequenceDataset, valid_ds: SequenceDataset, input_size
         if ema is not None:
             ema.restore(model)
 
-        print(f"epoch={epoch+1}/{MAX_EPOCHS} train_loss={train_loss:.5f} valid_loss={valid_loss:.5f}")
+        epoch_time = time.time() - epoch_start
+        improved = "*" if valid_loss <= best_val_loss else ""
+        print(f"epoch={epoch+1}/{MAX_EPOCHS} train_loss={train_loss:.5f} valid_loss={valid_loss:.5f} time={epoch_time:.0f}s pat={patience_left} {improved}")
 
         if patience_left <= 0:
             print("Early stopping")
