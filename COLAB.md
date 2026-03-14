@@ -11,6 +11,13 @@ It does not use MetaTrader5. Instead, it reads uploaded CSV files for:
 - `M15`
 - `H1`
 
+You can export those CSV files directly from your Windows MT5 machine with:
+
+```powershell
+python .\export_mt5_offline.py --symbol XAUUSD --years-back 1 --output-dir offline_exports
+python .\export_mt5_offline.py --symbol BTCUSDm --output-symbol BTCUSD --years-back 1 --output-dir offline_exports
+```
+
 ## Expected CSV names
 
 Put your files into one folder and use names like:

@@ -164,6 +164,7 @@ if IS_BTC_BASE_PROFILE:
     # BTC trades continuously, so the XAU session/news gates are usually too restrictive.
     SESSION_FILTER = False
     USE_NEWS_FILTER = False
+    MAX_SPREAD_POINTS = _env_int("TRADE_BOT_BTC_MAX_SPREAD_POINTS", 5000)
 
 RR_MAP = [
     (0.82, 2.00),
